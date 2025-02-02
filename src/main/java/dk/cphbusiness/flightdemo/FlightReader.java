@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,12 @@ public class FlightReader
             //round-3
             System.out.println("Task 3:");
             printFlightsBetweenAirports(getFlightsBetweenAirports(flightInfoDTOList, "Fukuoka", "Haneda Airport"), "Fukuoka", "Haneda Airport");
+            System.out.println();
+
+            //round-4
+            System.out.println("Task 4:");
+            LocalTime testTime = LocalTime.of(1, 00);
+            printFlightsBeforeTime(getFlightsBeforeTime(flightInfoDTOList, testTime), testTime);
             System.out.println();
         } catch (IOException e)
         {
@@ -156,11 +163,16 @@ public class FlightReader
         System.out.println("There are a total of " + flightList.size() + " flights, between " + airport1 + " and " + airport2 + ".");
     }
 
-    public static List<FlightInfoDTO> flightsBeforeTime(List<FlightInfoDTO> flightList, LocalDateTime time)
+    public static List<FlightInfoDTO> getFlightsBeforeTime(List<FlightInfoDTO> flightList, LocalTime time)
     {
         return flightList.stream()
-                .filter(flight -> flight.getDeparture().isAfter(time))
+                .filter(flight -> flight.getDeparture().toLocalTime().isAfter(time))
                 .collect(Collectors.toList());
+    }
+
+    public static void printFlightsBeforeTime(List<FlightInfoDTO> flightList, LocalTime time)
+    {
+        System.out.println("There are " + flightList.size() + " flights before: " + time);
     }
 
 }
