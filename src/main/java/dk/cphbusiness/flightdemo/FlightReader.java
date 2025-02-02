@@ -30,9 +30,7 @@ public class FlightReader
             System.out.println();
 
             //round-1
-            printFlightTime(
-                    getTotalFlightTimePerAirline(flightInfoDTOList, "Jet Linx Aviation"), "Jet Linx Aviation"
-            );
+            printFlightTime(getTotalFlightTimePerAirline(flightInfoDTOList, "Jet Linx Aviation"), "Jet Linx Aviation");
         } catch (IOException e)
         {
             e.printStackTrace();
