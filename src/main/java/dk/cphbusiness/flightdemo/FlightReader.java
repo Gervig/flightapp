@@ -16,19 +16,31 @@ import java.util.*;
  *
  * @author: Thomas Hartmann
  */
-public class FlightReader {
+public class FlightReader
+{
 
-    public static void main(String[] args) {
-        try {
+    public static void main(String[] args)
+    {
+        try
+        {
             List<FlightDTO> flightList = getFlightsFromFile("flights.json");
             List<FlightInfoDTO> flightInfoDTOList = getFlightInfoDetails(flightList);
             flightInfoDTOList.forEach(System.out::println);
-        } catch (IOException e) {
+
+            System.out.println();
+
+            //round-1
+            totalFlightTimePerAirlineToString(
+                    getTotalFlightTimePerAirline(flightInfoDTOList, "Jet Linx Aviation"), "Jet Linx Aviation"
+            );
+        } catch (IOException e)
+        {
             e.printStackTrace();
         }
     }
 
-    public static List<FlightDTO> getFlightsFromFile(String filename) throws IOException {
+    public static List<FlightDTO> getFlightsFromFile(String filename) throws IOException
+    {
 
         ObjectMapper objectMapper = Utils.getObjectMapper();
 
@@ -40,28 +52,49 @@ public class FlightReader {
         return flightsList;
     }
 
-    public static List<FlightInfoDTO> getFlightInfoDetails(List<FlightDTO> flightList) {
+    public static List<FlightInfoDTO> getFlightInfoDetails(List<FlightDTO> flightList)
+    {
         List<FlightInfoDTO> flightInfoList = flightList.stream()
-           .map(flight -> {
-                LocalDateTime departure = flight.getDeparture().getScheduled();
-                LocalDateTime arrival = flight.getArrival().getScheduled();
-                Duration duration = Duration.between(departure, arrival);
-                FlightInfoDTO flightInfo =
-                        FlightInfoDTO.builder()
-                            .name(flight.getFlight().getNumber())
-                            .iata(flight.getFlight().getIata())
-                            .airline(flight.getAirline().getName())
-                            .duration(duration)
-                            .departure(departure)
-                            .arrival(arrival)
-                            .origin(flight.getDeparture().getAirport())
-                            .destination(flight.getArrival().getAirport())
-                            .build();
+                .map(flight ->
+                {
+                    LocalDateTime departure = flight.getDeparture().getScheduled();
+                    LocalDateTime arrival = flight.getArrival().getScheduled();
+                    Duration duration = Duration.between(departure, arrival);
+                    FlightInfoDTO flightInfo =
+                            FlightInfoDTO.builder()
+                                    .name(flight.getFlight().getNumber())
+                                    .iata(flight.getFlight().getIata())
+                                    .airline(flight.getAirline().getName())
+                                    .duration(duration)
+                                    .departure(departure)
+                                    .arrival(arrival)
+                                    .origin(flight.getDeparture().getAirport())
+                                    .destination(flight.getArrival().getAirport())
+                                    .build();
 
-                return flightInfo;
-            })
-        .toList();
+                    return flightInfo;
+                })
+                .toList();
         return flightInfoList;
+    }
+
+    public static Duration getTotalFlightTimePerAirline(List<FlightInfoDTO> flightList, String airline)
+    {
+        return flightList.stream()
+                .filter(flight -> Objects.equals(flight.getAirline(), airline))
+                .map(flight -> Duration.between(
+                        flight.getDeparture(),
+                        flight.getArrival()))
+                .reduce(Duration.ZERO, Duration::plus);
+    }
+
+    public static void totalFlightTimePerAirlineToString(Duration duration, String airline)
+    {
+        long hours = duration.toHours();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+
+        System.out.println("Airline " + airline + "'s total flighttime: " +  hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
     }
 
 }
