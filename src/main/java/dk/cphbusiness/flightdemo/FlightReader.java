@@ -30,7 +30,7 @@ public class FlightReader
             System.out.println();
 
             //round-1
-            totalFlightTimePerAirlineToString(
+            printFlightTime(
                     getTotalFlightTimePerAirline(flightInfoDTOList, "Jet Linx Aviation"), "Jet Linx Aviation"
             );
         } catch (IOException e)
@@ -88,7 +88,7 @@ public class FlightReader
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
-    public static void totalFlightTimePerAirlineToString(Duration duration, String airline)
+    public static void printFlightTime(Duration duration, String airline)
     {
         long hours = duration.toHours();
         long minutes = duration.toMinutesPart();
