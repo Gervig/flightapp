@@ -156,4 +156,11 @@ public class FlightReader
         System.out.println("There are a total of " + flightList.size() + " flights, between " + airport1 + " and " + airport2 + ".");
     }
 
+    public static List<FlightInfoDTO> flightsBeforeTime(List<FlightInfoDTO> flightList, LocalDateTime time)
+    {
+        return flightList.stream()
+                .filter(flight -> flight.getDeparture().isAfter(time))
+                .collect(Collectors.toList());
+    }
+
 }
