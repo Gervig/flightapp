@@ -31,10 +31,19 @@ public class FlightReader
             System.out.println();
 
             //round-1
+            System.out.println("Task 1:");
             printTotalFlightTimeByAirline(getTotalFlightTimePerAirline(flightInfoDTOList, "IndiGo"), "IndiGo");
+            System.out.println();
 
             //round-2
+            System.out.println("Task 2:");
             printAverageFlightTimeByAirline(getAverageFlightTimePerAirline(flightInfoDTOList, "IndiGo"), "IndiGo");
+            System.out.println();
+
+            //round-3
+            System.out.println("Task 3:");
+            printFlightsBetweenAirports(getFlightsBetweenAirports(flightInfoDTOList, "Fukuoka", "Haneda Airport"), "Fukuoka", "Haneda Airport");
+            System.out.println();
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -104,7 +113,7 @@ public class FlightReader
         long minutes = duration.toMinutesPart();
         long seconds = duration.toSecondsPart();
 
-        System.out.println("Airline " + airline + "'s total flighttime: " +  hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
+        System.out.println("Airline " + airline + "'s total flighttime: " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
     }
 
     public static Duration getAverageFlightTimePerAirline(List<FlightInfoDTO> flightList, String airline)
@@ -113,7 +122,8 @@ public class FlightReader
 
         int flightCount = filteredFlights.size();
 
-        if (flightCount == 0) {
+        if (flightCount == 0)
+        {
             return Duration.ZERO; // Avoid division by zero
         }
 
@@ -132,7 +142,22 @@ public class FlightReader
         long minutes = duration.toMinutesPart();
         long seconds = duration.toSecondsPart();
 
-        System.out.println("Airline " + airline + "'s average flighttime: " +  hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
+        System.out.println("Airline " + airline + "'s average flighttime: " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
+    }
+
+    public static List<FlightInfoDTO> getFlightsBetweenAirports(List<FlightInfoDTO> flightList, String airport1, String airport2)
+    {
+        return flightList.stream()
+                .filter(flight ->
+                        (Objects.equals(flight.getOrigin(), airport1) || Objects.equals(flight.getOrigin(), airport2)) &&
+                        (Objects.equals(flight.getDestination(), airport1) || Objects.equals(flight.getDestination(), airport2))
+                )
+                .collect(Collectors.toList());
+    }
+
+    public static void printFlightsBetweenAirports(List<FlightInfoDTO> flightList, String airport1, String airport2)
+    {
+        System.out.println("There are " + flightList.size() + " flights, betweeen " + airport1 + " and " + airport2 + ".");
     }
 
 }
