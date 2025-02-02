@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Purpose:
@@ -30,7 +31,10 @@ public class FlightReader
             System.out.println();
 
             //round-1
-            printTotalFlightTimeByAirline(getTotalFlightTimePerAirline(flightInfoDTOList, "Jet Linx Aviation"), "Jet Linx Aviation");
+            printTotalFlightTimeByAirline(getTotalFlightTimePerAirline(flightInfoDTOList, "IndiGo"), "IndiGo");
+
+            //round-2
+            printAverageFlightTimeByAirline(getAverageFlightTimePerAirline(flightInfoDTOList, "IndiGo"), "IndiGo");
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -76,10 +80,18 @@ public class FlightReader
         return flightInfoList;
     }
 
-    public static Duration getTotalFlightTimePerAirline(List<FlightInfoDTO> flightList, String airline)
+    public static List<FlightInfoDTO> filterByAirline(List<FlightInfoDTO> flightList, String airline)
     {
         return flightList.stream()
                 .filter(flight -> Objects.equals(flight.getAirline(), airline))
+                .collect(Collectors.toList());
+    }
+
+    public static Duration getTotalFlightTimePerAirline(List<FlightInfoDTO> flightList, String airline)
+    {
+        flightList = filterByAirline(flightList, airline);
+
+        return flightList.stream()
                 .map(flight -> Duration.between(
                         flight.getDeparture(),
                         flight.getArrival()))
@@ -93,6 +105,34 @@ public class FlightReader
         long seconds = duration.toSecondsPart();
 
         System.out.println("Airline " + airline + "'s total flighttime: " +  hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
+    }
+
+    public static Duration getAverageFlightTimePerAirline(List<FlightInfoDTO> flightList, String airline)
+    {
+        List<FlightInfoDTO> filteredFlights = filterByAirline(flightList, airline);
+
+        int flightCount = filteredFlights.size();
+
+        if (flightCount == 0) {
+            return Duration.ZERO; // Avoid division by zero
+        }
+
+        Duration totalDuration = filteredFlights.stream()
+                .map(flight -> Duration.between(
+                        flight.getDeparture(),
+                        flight.getArrival()))
+                .reduce(Duration.ZERO, Duration::plus);
+
+        return totalDuration.dividedBy(flightCount);
+    }
+
+    public static void printAverageFlightTimeByAirline(Duration duration, String airline)
+    {
+        long hours = duration.toHours();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+
+        System.out.println("Airline " + airline + "'s average flighttime: " +  hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
     }
 
 }
