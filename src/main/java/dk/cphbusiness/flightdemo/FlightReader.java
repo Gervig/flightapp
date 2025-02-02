@@ -101,9 +101,7 @@ public class FlightReader
         flightList = filterByAirline(flightList, airline);
 
         return flightList.stream()
-                .map(flight -> Duration.between(
-                        flight.getDeparture(),
-                        flight.getArrival()))
+                .map(flight -> flight.getDuration())
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
@@ -128,9 +126,7 @@ public class FlightReader
         }
 
         Duration totalDuration = filteredFlights.stream()
-                .map(flight -> Duration.between(
-                        flight.getDeparture(),
-                        flight.getArrival()))
+                .map(flight -> flight.getDuration())
                 .reduce(Duration.ZERO, Duration::plus);
 
         return totalDuration.dividedBy(flightCount);
@@ -157,7 +153,7 @@ public class FlightReader
 
     public static void printFlightsBetweenAirports(List<FlightInfoDTO> flightList, String airport1, String airport2)
     {
-        System.out.println("There are " + flightList.size() + " flights, betweeen " + airport1 + " and " + airport2 + ".");
+        System.out.println("There are a total of " + flightList.size() + " flights, between " + airport1 + " and " + airport2 + ".");
     }
 
 }
