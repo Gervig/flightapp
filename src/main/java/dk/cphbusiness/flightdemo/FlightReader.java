@@ -51,6 +51,15 @@ public class FlightReader
             LocalTime testTime = LocalTime.of(1, 00);
             printFlightsBeforeTime(getFlightsBeforeTime(flightInfoDTOList, testTime), testTime);
             System.out.println();
+
+            //round-5
+            System.out.println("Task 5: \nAverage flight times by Airlines:");
+            // Get average durations
+            Map<String, Duration> avgDurations = getAverageFlightTimeForAllAirlines(flightInfoDTOList);
+
+            // Print results
+            avgDurations.forEach((airline, duration) ->
+                    System.out.println(airline + ": " + duration.toHours() + "h " + duration.toMinutesPart() + "m"));
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -139,6 +148,28 @@ public class FlightReader
         return totalDuration.dividedBy(flightCount);
     }
 
+    public static Map<String, Duration> getAverageFlightTimeForAllAirlines(List<FlightInfoDTO> flightList)
+    {
+        return flightList.stream()
+                .filter(flight -> flight.getAirline() != null)
+                .collect(Collectors.groupingBy(
+                        FlightInfoDTO::getAirline,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                flights ->
+                                {
+                                    int flightCount = flights.size();
+                                    if (flightCount == 0) return Duration.ZERO;
+
+                                    Duration totalDuration = flights.stream()
+                                            .map(flight -> flight.getDuration())
+                                            .reduce(Duration.ZERO, Duration::plus);
+                                    return totalDuration.dividedBy(flightCount);
+                                }
+                        )
+                ));
+    }
+
     public static void printAverageFlightTimeByAirline(Duration duration, String airline)
     {
         long hours = duration.toHours();
@@ -153,7 +184,7 @@ public class FlightReader
         return flightList.stream()
                 .filter(flight ->
                         (Objects.equals(flight.getOrigin(), airport1) || Objects.equals(flight.getOrigin(), airport2)) &&
-                        (Objects.equals(flight.getDestination(), airport1) || Objects.equals(flight.getDestination(), airport2))
+                                (Objects.equals(flight.getDestination(), airport1) || Objects.equals(flight.getDestination(), airport2))
                 )
                 .collect(Collectors.toList());
     }
