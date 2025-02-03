@@ -53,13 +53,18 @@ public class FlightReader
             System.out.println();
 
             //round-5
-            System.out.println("Task 5: \nAverage flight times by Airlines:");
-            // Get average durations
+            System.out.println("Task 5:\nAverage flight times by Airlines:");
             Map<String, Duration> avgDurations = getAverageFlightTimeForAllAirlines(flightInfoDTOList);
-
-            // Print results
             avgDurations.forEach((airline, duration) ->
                     System.out.println(airline + ": " + duration.toHours() + "h " + duration.toMinutesPart() + "m"));
+            System.out.println();
+
+            //round-6
+            System.out.println("Task 6:\nFlights sorted by Arrival time:");
+            List<FlightInfoDTO> flightsByArrival = sortByArrival(flightInfoDTOList);
+            flightsByArrival.forEach((System.out::println));
+            System.out.println();
+
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -204,6 +209,13 @@ public class FlightReader
     public static void printFlightsBeforeTime(List<FlightInfoDTO> flightList, LocalTime time)
     {
         System.out.println("There are " + flightList.size() + " flights before: " + time);
+    }
+
+    public static List<FlightInfoDTO> sortByArrival(List<FlightInfoDTO> flightList)
+    {
+        return flightList.stream()
+                .sorted(Comparator.comparing(FlightInfoDTO::getArrival).reversed())
+                .collect(Collectors.toList());
     }
 
 }
