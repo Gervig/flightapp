@@ -65,6 +65,13 @@ public class FlightReader
             flightsByArrival.forEach((System.out::println));
             System.out.println();
 
+            //round-7
+            System.out.println("Task 7:\nTotal flight times by Airlines:");
+            Map<String, Duration> totalDurations = getTotalFlightTimeForAllAirlines(flightInfoDTOList);
+            totalDurations.forEach((airline, duration) ->
+                    System.out.println(airline + ": " + duration.toHours() + "h" + duration.toMinutesPart() + "m"));
+            System.out.println();
+
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -170,6 +177,28 @@ public class FlightReader
                                             .map(flight -> flight.getDuration())
                                             .reduce(Duration.ZERO, Duration::plus);
                                     return totalDuration.dividedBy(flightCount);
+                                }
+                        )
+                ));
+    }
+
+    public static Map<String, Duration> getTotalFlightTimeForAllAirlines(List<FlightInfoDTO> flightList)
+    {
+        return flightList.stream()
+                .filter(flight -> flight.getAirline() != null)
+                .collect(Collectors.groupingBy(
+                        FlightInfoDTO::getAirline,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                flights ->
+                                {
+                                    int flightCount = flights.size();
+                                    if (flightCount == 0) return Duration.ZERO;
+
+                                    Duration totalDuration = flights.stream()
+                                            .map(flight -> flight.getDuration())
+                                            .reduce(Duration.ZERO, Duration::plus);
+                                    return totalDuration;
                                 }
                         )
                 ));
